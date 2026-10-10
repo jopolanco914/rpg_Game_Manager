@@ -1,8 +1,8 @@
 #include <iostream>
 #include <vector>
+#include <string>
 #include <ctime>
 #include <cstdlib>
-
 
 
 class Character {
@@ -11,13 +11,12 @@ class Character {
     int health;
     int level;
     int attackPower;
-    srand(time(0));
-    
-   
-    public:
 
     // Use for generating special ability choices
     int RNG = rand() % 3 + 1;
+    
+   
+    public:
 
     enum characterType
     {
@@ -166,17 +165,18 @@ class Warrior : public Character{
     }
     
 
-    Warrior(std::string name, int health, int armor, Weapons weapon, char dualWield)
+    Warrior(std::string name, int health, int armor, Weapons weapon, std::string abilityActive)
     {
         Character::setName(name);
         Character::setHealth(health);
         this->weapon = weapon;
         this->armor = armor;
-        if(dualWield == 'Y')
-            {
-            dualWield == true;
+
+        if(abilityActive == "Y")
+        {
+            dualWield = true;
             castDualWield();
-            }
+         }
        
     }
 
@@ -236,13 +236,13 @@ class Warrior : public Character{
     {
         std::cout << " Your special ability: Dual Wield is Active" << '\n';
         std::cout << " Boost Applied: { Attack +100, Health +300, Armor +300 } " << '\n';   
-        int attackUp = Character.getAttackPower() + 100;
-        int armorUp = Character.getArmor() + 300;
-        int healthUp = Character.getHealth() + 300;
+        int attackUp = Warrior::getAttackPower() + 100;
+        int armorUp = Warrior::getArmor() + 300;
+        int healthUp = Warrior::getHealth() + 300;
 
-        Character.setAttackPower(attackUp);
-        Character.setArmor(armorUp);
-        Character.setHealth(healthUp);
+        Warrior::setAttackPower(attackUp);
+        Warrior::setArmor(armorUp);
+        Warrior::setHealth(healthUp);
     }
 
     
@@ -261,6 +261,7 @@ private:
 
 int magicLvl;
 int summonLvl;
+int summonAttack;
 bool summonActivated = false;
 
 public:
@@ -274,32 +275,39 @@ CreatureSummoned creature;
 
     Mage()
     {
-        Mage::setHealth(200);
-        Mage::setAttack(200);
+        Character::setHealth(200);
+        Character::setAttackPower(80);
+
         magicLvl = 20;
-        summonLvl = 10;
+        summonLvl = 1;
+        summonAttack = 1;
         magicType = Magic::Fire;
     }
 
     Mage(std::string name)
     {
-        Mage::setName(name)
-        Mage::setHealth(10);
+        Character::setName(name);
+        Character::setHealth(200);
+        Character::setAttackPower(80);
         magicLvl = 20;
-        summonLvl = 10;
+        summonLvl = 1;
+        summonAttack = 1;
         magicType = Magic::Fire;
     }
 
 
 
 
-    Mage(std::string name, int magicLvl, int summonLvl, Magic magicType, char summonsActivated)
+    Mage(std::string name, int magicLvl , Magic magicType, std::string summonsActivated)
     {
         Character::setName(name);
+        Character::setHealth(200);
+        Character::setAttackPower(80);
         this->magicLvl = magicLvl;
-        this->summonLvl = summonLvl;
         this->magicType = magicType;
-        if(summonsActivated == 'Y')
+        summonLvl = 1;
+        summonAttack = 1;
+        if(summonsActivated == "Y")
         {
             specialSummon();
         }
@@ -315,6 +323,11 @@ CreatureSummoned creature;
         this->summonLvl = summonLvl;
     }
 
+    void setSummonAttack(int summonAttack)
+    {
+        this->summonAttack = summonAttack;
+    }
+
     int getMagicLvl()
     {
         return magicLvl;
@@ -325,9 +338,14 @@ CreatureSummoned creature;
         return summonLvl;
     }
 
-    std::string getMagicType(Magic type)
+    int getSummonAttack()
     {
-        switch(type)
+        return summonAttack;
+    }
+
+    std::string getMagicType()
+    {
+        switch(magicType)
         {
             case Magic::Earth:
                 return "Earth";
@@ -375,27 +393,39 @@ CreatureSummoned creature;
         Character::displayPlayerInfo();
         std::cout << "Magic Lvl: " << Mage::getMagicLvl() << '\n';
         std::cout << "Summon Lvl " << Mage::getSummonLvl() << '\n';
-        std::cout << "Magic Type" << Mage::getMagicType(magicType) << '\n';
+        std::cout << "Magic Type" << Mage::getMagicType() << '\n';
 
     }
 
     void specialSummon()
     {
         std::cout << " Your special summon has been activated " << '\n';
-        swtich(Character.RNG)
+        switch(Character::RNG)
         {
             case 1:
                 creature = Dragon;
+                setSummonLvl(3);
+                setSummonAttack(30);
+                setAttackPower((getSummonAttack() * getSummonLvl()) + getAttackPower());
                 break;
             case 2:
                 creature = Bear;
+                setSummonLvl(3);
+                setSummonAttack(30);
+                setAttackPower((getSummonAttack() * getSummonLvl()) + getAttackPower());
                 break;
             case 3:
                 creature = Dinosaur;
+                setSummonLvl(3);
+                setSummonAttack(30);
+                setAttackPower((getSummonAttack() * getSummonLvl()) + getAttackPower());
                 break;
             case 4:
                 creature = Megladon;
-                 break;
+                setSummonLvl(3);
+                setSummonAttack(30);
+                setAttackPower((getSummonAttack() * getSummonLvl()) + getAttackPower());
+                break;
         }           
     }
 };
@@ -414,12 +444,15 @@ class Archer : public Character{
 private:
 
 int rangedAttack;
+int arrowShieldHP;
+bool arrowShieldActive = false;
+
 
 
 public:
 
 enum Arrows {Wolf, Lightning, Fire, Underworld};
-enum Bows {Legendary, Enchanted, Regular};
+enum Bows {Legendary, Enchanted, Regular, Straw};
 Arrows arrowType;
 Bows bowType;
 
@@ -429,7 +462,8 @@ Archer()
     Character::setAttackPower(60);
     rangedAttack = 100;
     arrowType = Arrows::Fire;
-    bowType = Bows::Regular;
+    setBowType();
+    arrowShieldActive = false;
 }
 
 Archer(std::string name)
@@ -439,14 +473,19 @@ Archer(std::string name)
     Character::setAttackPower(60);
     rangedAttack = 100;
     arrowType = Arrows::Fire;
-    bowType = Bows::Regular;
+    setBowType();
+    arrowShield = false;
 }
 
-Archer(int rangedAttack, Bows bowType, Arrows arrowType)
+Archer(std::string name, int rangedAttack, Bows bowType, Arrows arrowType)
 {
+    Character::setName(name);
+    Character::setHealth(60);
+    Character::setAttackPower(60);
     this->rangedAttack = rangedAttack;
     this->bowType = bowType;
     this->arrowType = arrowType;
+    arrowShieldActive = false;
 }
 
 void setRangeDamage(int rangedAttack)
@@ -454,29 +493,47 @@ void setRangeDamage(int rangedAttack)
     this->rangedAttack = rangedAttack;
 }
 
+void setArrowShieldHP(int arrowShieldHP)
+{
+    this->arrowShieldHP = arrowShieldHP;
+}
+
 int getRangeDamage()
 {
     return rangedAttack;
 }
 
-void setBowType(Bows bowType){
-    switch(bowType)
+int getArrowShieldHP()
+{
+    return arrowShieldHP;
+}
+
+void setBowType(){
+    switch(Character::RNG)
     {
-        case Bows::Legendary:
-        this->bowType = bowType;
+        case 1:
+        bowType = Bows::Regular;
         break;
 
-        case Bows::Enchanted:
-        this->bowType = bowType;
+        case 2:
+        bowType = Bows::Enchanted;
         break;
 
-        case Bows::Regular:
-        this->bowType = bowType;
+        case 3:
+        bowType = Bows::Legendary;
+        arrowShieldActive = true;
+        if (arrowShieldActive)
+            arrowShieldAbility();
         break;
+
+        case 4:
+        bowType = Bows::Straw;
+        break;
+
     }
 }
 
-std::string getBowType(Bows bowType)
+std::string getBowType()
 {
     switch(bowType)
     {
@@ -488,33 +545,33 @@ std::string getBowType(Bows bowType)
 
         case Bows::Regular:
             return "Regular";
+
+        case Bows::Straw:
+            return "Straw";
     }
     return "Unknown";
 }
 
-void setArrowType(Arrows arrowType)
+void setArrowType()
 {
-    switch(arrowType)
+    switch(Character::RNG)
     {
-        case Arrows::Fire:
-        this->arrowType = arrowType;
+    case 1:
+        arrowType = Arrows::Fire;
         break;
-
-        case Arrows::Lightning:
-        this->arrowType = arrowType;
+    case 2:
+        arrowType = Arrows::Lightning;
         break;
-
-        case Arrows::Underworld:
-        this->arrowType = arrowType;
+    case 3:
+        arrowType = Arrows::Wolf;
         break;
-
-        case Arrows::Wolf:
-        this->arrowType = arrowType;
+    case 4:
+        arrowType = Arrows::Underworld;
         break;
     }
 }
 
-std::string getArrowType(Arrows arrowType)
+std::string getArrowType()
 {
     switch(arrowType)
     {
@@ -533,12 +590,20 @@ std::string getArrowType(Arrows arrowType)
 }
 
 
+void arrowShieldAbility()
+{
+    std::cout << "Legendary Bow gives special ability " << '\n';
+    setArrowShieldHP(300);
+    setHealth(Character::getHealth() + getArrowShieldHP());
+}
+
+
 void displayPlayerInfo() override
 {
     Character::displayPlayerInfo();
     std::cout << "Ranged Attack: " << rangedAttack << '\n';
-    std::cout << "Bow Type: " << Archer::getBowType(bowType) << '\n';
-    std::cout << "Arrow Type: " << Archer::getArrowType(arrowType) << '\n';
+    std::cout << "Bow Type: " << Archer::getBowType() << '\n';
+    std::cout << "Arrow Type: " << Archer::getArrowType() << '\n';
 }
 };
 
@@ -564,6 +629,8 @@ void displayAllCharacters(std::vector<Character*> createdCharacters);
 
 int main(){
     
+    srand(time(0));
+
     std::vector<Character*> createdCharacters;
 
     printMenu();
