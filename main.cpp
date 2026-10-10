@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <ctime>
+#include <cstdlib>
 
 
 
@@ -9,11 +11,15 @@ class Character {
     int health;
     int level;
     int attackPower;
+    srand(time(0));
     
    
     public:
 
-    enum characterType 
+    // Use for generating special ability choices
+    int RNG = rand() % 3 + 1;
+
+    enum characterType
     {
         Warrior,
         Mage,
@@ -27,7 +33,7 @@ class Character {
     {
         name = "Bot";
         level = 0;
-        health = 40;
+        health = 400;
         attackPower = 50;
         type = characterType::Warrior;
     }
@@ -36,7 +42,7 @@ class Character {
     {
         this->name = name;
         level = 0;
-        health = 40;
+        health = 400;
         attackPower = 50;
         type = characterType::Warrior;
     }
@@ -125,6 +131,7 @@ class Character {
     // **** Create a function to attack ****
     // Function to delete allocated memory
     virtual ~Character() = default;
+
 };
 
 class Warrior : public Character{
@@ -147,7 +154,7 @@ class Warrior : public Character{
     {
         weapon = Weapons::Katana;
         armor = 150;
-        Character::setHealth(50);
+        Character::setHealth(500);
     }
 
     Warrior(std::string name)
@@ -155,17 +162,22 @@ class Warrior : public Character{
         Character::name = name;
         weapon = Weapons::Katana;
         armor = 150;
-        Character::setHealth(50);
+        Character::setHealth(500);
     }
+    
 
-    Warrior(std::string name, int health, int armor, Weapons weapon, bool dualWield)
+    Warrior(std::string name, int health, int armor, Weapons weapon, char dualWield)
     {
         Character::setName(name);
+        Character::setHealth(health);
         this->weapon = weapon;
         this->armor = armor;
-        if(dualWield == true)
+        if(dualWield == 'Y')
+            {
+            dualWield == true;
             castDualWield();
-        Character::setHealth(health);
+            }
+       
     }
 
     void setArmor(int armor)
@@ -222,10 +234,15 @@ class Warrior : public Character{
 
     void castDualWield()
     {
-        dualWield = true;
-        Character::setLevel(100);
-        Character::setHealth(300);
-        Warrior::setArmor(300);
+        std::cout << " Your special ability: Dual Wield is Active" << '\n';
+        std::cout << " Boost Applied: { Attack +100, Health +300, Armor +300 } " << '\n';   
+        int attackUp = Character.getAttackPower() + 100;
+        int armorUp = Character.getArmor() + 300;
+        int healthUp = Character.getHealth() + 300;
+
+        Character.setAttackPower(attackUp);
+        Character.setArmor(armorUp);
+        Character.setHealth(healthUp);
     }
 
     
@@ -244,16 +261,21 @@ private:
 
 int magicLvl;
 int summonLvl;
-
+bool summonActivated = false;
 
 public:
 
-enum class Magic {Fire, Earth, Water, Wind};
+enum Magic {Fire, Earth, Water, Wind};
+enum CreatureSummoned {Dragon, Bear, Dinosaur, Megladon};
+
+
 Magic magicType;
+CreatureSummoned creature;
 
     Mage()
     {
-        Mage::setHealth(10);
+        Mage::setHealth(200);
+        Mage::setAttack(200);
         magicLvl = 20;
         summonLvl = 10;
         magicType = Magic::Fire;
@@ -261,7 +283,7 @@ Magic magicType;
 
     Mage(std::string name)
     {
-        Character::name = name;
+        Mage::setName(name)
         Mage::setHealth(10);
         magicLvl = 20;
         summonLvl = 10;
@@ -271,12 +293,16 @@ Magic magicType;
 
 
 
-    Mage(std::string name, int magicLvl, int summonLvl, Magic magicType)
+    Mage(std::string name, int magicLvl, int summonLvl, Magic magicType, char summonsActivated)
     {
-        Character::name = name;
+        Character::setName(name);
         this->magicLvl = magicLvl;
         this->summonLvl = summonLvl;
         this->magicType = magicType;
+        if(summonsActivated == 'Y')
+        {
+            specialSummon();
+        }
     }
 
     void setMagicLvl(int magicLvl)
@@ -318,6 +344,12 @@ Magic magicType;
         return "Unknown";
     }
 
+
+    // 10/08/26
+    // *** Make the getMagicType to not accept a parameter ***
+    // replace the switch or fix logic in this function too
+    // adjust summonLvl to creature summoned
+
     void setMagicType(Magic magicType)
     {
         switch(magicType)
@@ -346,8 +378,38 @@ Magic magicType;
         std::cout << "Magic Type" << Mage::getMagicType(magicType) << '\n';
 
     }
+
+    void specialSummon()
+    {
+        std::cout << " Your special summon has been activated " << '\n';
+        swtich(Character.RNG)
+        {
+            case 1:
+                creature = Dragon;
+                break;
+            case 2:
+                creature = Bear;
+                break;
+            case 3:
+                creature = Dinosaur;
+                break;
+            case 4:
+                creature = Megladon;
+                 break;
+        }           
+    }
 };
 
+
+/*
+10/08/26
+Archer class changes:
+1. look into special ability
+2. use the RNG to set arrow type
+3. combine all 3 character types to be able to attack 
+4. Check to make sure your getBow and getArrows takes no paramters
+
+**/
 class Archer : public Character{
 private:
 
@@ -484,17 +546,28 @@ void displayPlayerInfo() override
 
 
 
-// **** Work on storing character into vectors ****
-
+// 10/08/26 
+// Functions I want to add:
+// 1 - Simulate an attack chain (use recursion)  *
+// 2 - Display character statistics (check to see if already done)
+// 3 - Combine the Battle system with the first function *
 void buildCharacter(std::vector<Character*>& createdCharacters, std::string typeOfCharacter);
 Character* searchCharacter(std::vector<Character*>& createdCharacters, std::string selectedCharacter);
 void modifyCharacter(std::vector<Character*>& createdCharacters);
+void printMenu();
+
+std::string battleSim(std::vector<Character*>& createdCharacters);
+void displayAllCharacters(std::vector<Character*> createdCharacters);
+
 
 
 
 int main(){
     
     std::vector<Character*> createdCharacters;
+
+    printMenu();
+
     
 
 
@@ -696,7 +769,78 @@ void modifyCharacter(std::vector<Character*>& createdCharacters)
         std::cin >> response;
     
     }while(response !=  "q");
-    
-
-
 }
+
+
+   void printMenu()
+   {
+       std::cout << "1. Create Character " << '\n';
+       std::cout << "2. Display Characters " << '\n';
+       std::cout << "3. Find Character " << '\n';
+       std::cout << "4. Battle " << '\n';
+       std::cout << "5. Level up " << '\n';
+       std::cout << "6. Delete Character " << '\n';
+       std::cout << "7. Exit " << '\n';
+   }
+
+
+   std::string battleSim(std::vector<Character*>& createdCharacters)
+   {
+        std::string character1;
+        std::string character2;
+        // need to make a function to display all the created characters
+        displayAllCharacters();
+        
+        std::cout << " What character would you like to be? " << '\n';
+        getline(std::cin>>std::ws, character1);
+        Character* player1 = searchCharacter(createdCharacters, character1);
+
+
+
+        std::cout << " Pick your opponnent " << '\n';
+        getline(std::cin>>std::ws, character2);
+        Character* player2 = searchCharacter(createdCharacters, character2);
+
+        // Base case
+        if(player1->getHealth() <= 0 || player2->getHealth() <= 0)
+            {
+                if(player1->getHealth() > player2->getHealth())
+                {
+                    std::cout << character1 << " you have defeated " << character2 << " in combat. " << '\n';
+
+                }
+                else
+                {
+                     std::cout << character2 << " you have defeated " << character1 << " in combat. " << '\n';
+                }
+            }
+        // Use recursion to simulate a battle
+
+       
+
+   
+
+
+   }
+
+
+
+   /*
+   Errors Made:
+
+
+   **/
+   void displayAllCharacters(std::vector<Character*>& createdCharacters)
+   {
+    if(createdCharacters.empty())
+        {
+            std::cout << " No Characters have been created " << '\n';
+            return;
+        }
+
+   for(Character* temp : createdCharacters)
+      {
+       temp->displayPlayerInfo();
+       }
+
+   }
