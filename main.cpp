@@ -11,6 +11,7 @@ class Character {
     int health;
     int level;
     int attackPower;
+    int opponentsDefeated = 0;
 
     // Use for generating special ability choices
     int RNG = rand() % 3 + 1;
@@ -83,6 +84,11 @@ class Character {
         this->attackPower = attackPower;
     }
 
+    void setOpponentsDefeated(int opponentsDefeated)
+    {
+        this->opponentsDefeated = opponentsDefeated;
+    }
+
     std::string getName()
     {
         return name;
@@ -103,7 +109,14 @@ class Character {
         return attackPower;
     }
 
-   std::string getTypeName(characterType type){
+    int getOpponentsDefeated()
+    {
+        return opponentsDefeated;
+    }
+
+    // 10/11/26 Change the function to not allow any parameters
+    // Done
+   std::string getTypeName(){
         switch(type){
             case characterType::Warrior:
                 return "Warrior";
@@ -124,7 +137,7 @@ class Character {
         std::cout << "Lvl: " << level << '\n';
         std::cout << "Hp: " << health << '\n';
         std::cout << "Attack: " << attackPower << '\n';
-        std::cout << "Type: " << getTypeName(type) << '\n';
+        std::cout << "Type: " << getTypeName() << '\n';
     }
 
     // **** Create a function to attack ****
@@ -474,7 +487,7 @@ Archer(std::string name)
     rangedAttack = 100;
     arrowType = Arrows::Fire;
     setBowType();
-    arrowShield = false;
+    arrowShieldActive = false;
 }
 
 Archer(std::string name, int rangedAttack, Bows bowType, Arrows arrowType)
@@ -571,6 +584,27 @@ void setArrowType()
     }
 }
 
+void setArrowType(Arrows arrowType)
+{
+    if(arrowType == Arrows::Fire)
+        {
+            this->arrowType = Arrows::Fire;
+        }
+    else if(arrowType == Arrows::Lightning)
+    {
+        this->arrowType = Arrows::Lightning;
+    }
+    else if(arrowType == Arrows::Underworld)
+    {
+        this->arrowType = Arrows::Underworld;
+    }
+    else if(arrowType == Arrows::Wolf)
+    {
+        this->arrowType = Arrows::Wolf;
+    }
+    
+}
+
 std::string getArrowType()
 {
     switch(arrowType)
@@ -604,6 +638,7 @@ void displayPlayerInfo() override
     std::cout << "Ranged Attack: " << rangedAttack << '\n';
     std::cout << "Bow Type: " << Archer::getBowType() << '\n';
     std::cout << "Arrow Type: " << Archer::getArrowType() << '\n';
+
 }
 };
 
@@ -622,7 +657,7 @@ void modifyCharacter(std::vector<Character*>& createdCharacters);
 void printMenu();
 
 std::string battleSim(std::vector<Character*>& createdCharacters);
-void displayAllCharacters(std::vector<Character*> createdCharacters);
+void displayAllCharacters(std::vector<Character*>& createdCharacters);
 
 
 
@@ -826,7 +861,6 @@ void modifyCharacter(std::vector<Character*>& createdCharacters)
                     {
                         archerTemp->setArrowType(Archer::Arrows::Underworld);
                     }
-                
             }
             else
                  std::cout << "A null pointer was returned " << '\n';
@@ -851,12 +885,12 @@ void modifyCharacter(std::vector<Character*>& createdCharacters)
    }
 
 
-   std::string battleSim(std::vector<Character*>& createdCharacters)
+   std::string characterSelection(std::vector<Character*>& createdCharacters)
    {
         std::string character1;
         std::string character2;
         // need to make a function to display all the created characters
-        displayAllCharacters();
+        displayAllCharacters(createdCharacters);
         
         std::cout << " What character would you like to be? " << '\n';
         getline(std::cin>>std::ws, character1);
@@ -868,27 +902,141 @@ void modifyCharacter(std::vector<Character*>& createdCharacters)
         getline(std::cin>>std::ws, character2);
         Character* player2 = searchCharacter(createdCharacters, character2);
 
-        // Base case
-        if(player1->getHealth() <= 0 || player2->getHealth() <= 0)
-            {
-                if(player1->getHealth() > player2->getHealth())
-                {
-                    std::cout << character1 << " you have defeated " << character2 << " in combat. " << '\n';
+        // int player1HP = player1->getHealth();
+        // int player1Attack = player1->getAttackPower();
 
-                }
-                else
-                {
-                     std::cout << character2 << " you have defeated " << character1 << " in combat. " << '\n';
-                }
-            }
+        // int player2HP = player2->getHealth();
+        // int player2Attack = player2->getAttackPower();
+
+
+
+
+
+        // // Base case
+        // if(player1->getHealth() > player2->getHealth() && player2->getHealth() <= 0)
+        //     {
+        //             std::cout << character1 << " you have defeated " << character2 << " in combat. " << '\n';
+        //     }
+
+        // else if(player2->getHealth() > player1->getHealth() && player1->getHealth() <= 0)
+        //     {
+        //              std::cout << character2 << " you have defeated " << character1 << " in combat. " << '\n';
+        //     }
+        }
         // Use recursion to simulate a battle
 
+        void battleSim(Character* player1, Character* player2, std::vector<Character*>& createdCharacters)
+        {
+
+        // RNG first move determiner
+        int firstMoveRNG = rand() % 2 + 1;
+        int startingHealth1 = player1->getHealth();
+        int startingHealth2 = player2->getHealth();
+
+        //Player 1
+        // int player1Atk = player1->getAttackPower();
+        // int player1Health = player1->getHealth();
+
+        //Player 2
+        // int player2Atk = player2->getAttackPower();
+        // int player2Health = player2->getHealth();
+
+
+
+
+             // Base case
+        // if(player2->getHealth() <= 0)
+        //     {
+        //             std::cout << player1->getName() << " you have defeated " << player2->getName() << " in combat. " << '\n';
+        //             return;
+        //     }
+
+        // else if(player1->getHealth() <= 0)
+        //     {
+        //              std::cout << player2->getName() << " you have defeated " << player1->getName() << " in combat. " << '\n';
+        //              return;
+        //     }
+
+        if(firstMoveRNG == 1)
+        {
+            std::cout << "Player 1 wins first move " << '\n'; 
+            battleRound(player1, player2, createdCharacters);
+            // player2Health -= player1Atk;
+            // player2->setHealth(player2Health);
+            //std::cout << player1->getName() << " hit " << player2->getName() << " with " << player1Atk << " attack damage " << '\n';
+
+            // finish recursion 
+           // battleSim(player2, player1);
+        }
+        else if(firstMoveRNG == 2)
+        {
+            std::cout << "Player 2 wins first move " << '\n';
+            battleRound(player2, player1, createdCharacters);
+            //  player1Health -= player2Atk;
+            // player1->setHealth(player1Health);
+
+            // std::cout << player2->getName() << " hit " << player1->getName() << " with " << player2Atk << " attack damage " << '\n';
+            // battleSim(player1, player2);  
+        }
+        
+        //---- Reset player Health ----
+         player1->setHealth(startingHealth1);
+         player2->setHealth(startingHealth2);
+        }
+
+        void battleRound(Character* attacker, Character* defender, std::vector<Character*>& createdCharacters)
+        {
+            
+            int defBattleHealth = defender->getHealth();
+            int opponentCount = attacker->getOpponentsDefeated();
+            //base case
+            if(defender->getHealth() <= 0)
+            {
+                std::cout << attacker->getName() << " has defeated " << defender->getName() << " in battle." << '\n';
+                opponentCount++;
+                attacker->setOpponentsDefeated(opponentCount);
+                if(attacker->getOpponentsDefeated() > 1 && attacker->getOpponentsDefeated() % 2 == 0)
+                    {
+                        std::cout << attacker->getName() << " has leveled up " << '\n';
+                        levelCharacterUp(attacker);
+                    }
+                return;
+            }
+
+            //Attacker turn
+            defBattleHealth -= attacker->getAttackPower();
+            std::cout << attacker->getName() << " hits " << defender->getName() << " with ";
+            std::cout << attacker->getAttackPower() << " attack " << '\n';
+            defender->setHealth(defBattleHealth);
+            battleRound(defender, attacker, createdCharacters);
+
+        }
+
+    void levelCharacterUp(Character* toLevelUp)
+    {
+       Character* tempLevelUp = toLevelUp;
+        
+       if(tempLevelUp == nullptr)
+       {
+        return;
+       }
+
+
+       int currentLevel = tempLevelUp->getLevel();
+       int currAttack = tempLevelUp->getAttackPower();
+       int currHealth = tempLevelUp->getHealth();
+
+       currentLevel++;
+       tempLevelUp->setLevel(currentLevel);
+       tempLevelUp->setAttackPower(currAttack + 10);
+       tempLevelUp->setHealth(currHealth + 20);
+    
+       std::cout << tempLevelUp->getName() << " is now level " << tempLevelUp->getLevel() << '\n';
+       std::cout << "Health + 20: " << '\n';
+       std::cout << "Attack + 10: " << '\n';
        
 
-   
-
-
-   }
+    }
 
 
 
